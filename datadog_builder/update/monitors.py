@@ -14,33 +14,12 @@ import logging
 
 import datadog
 
-from datadog_builder import common
 from datadog_builder import constants
 
 LOG = logging.getLogger(__name__)
 
 
-def add_arguments(subparsers):
-    parser = common.create_subcommand(subparsers,
-                                      'update',
-                                      update_command,
-                                      help='Update datadog monitors')
-
-    parser.add_argument('-n', '--dry-run',
-                        action='store_true',
-                        dest='dry_run',
-                        help="Don't perform commands just test")
-
-    parser.add_argument('--no-delete',
-                        action='store_false',
-                        dest='delete',
-                        help="Don't delete unknown monitors")
-
-
-def update_command(args):
-    common.initialize(args)
-    config = common.load_config(args)
-
+def update_monitors(args, config):
     up_monitors = datadog.api.Monitor.get_all(monitor_tags=[constants.TAG])
     up_monitors = {m['name'].strip(): m for m in up_monitors}
 
